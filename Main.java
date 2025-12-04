@@ -10,19 +10,30 @@ import java.util.*;
  */
 // So far in this document i've come up with custom object classes for Nurses, Tech and doctors
 // Implemented 3 specialties for each type as String Arrays.
-// Next Steps: Create a schedule that illustrates when a nurse technichian or doctor is available using isFree
-// Next Next Steps: implement LL using java.util to store the lists of Doctors and nurses
+// Next Steps: Create a way for the user to add their name to the list (As a Nurse, Tech or Doc)
+// A number menu using case switch to select options
+// Once its successful with console, replace the system dialog with JOptionPane
 
+// Next Steps: Create a schedule that illustrates when a nurse technichian or doctor is available using isFree
 public class Main {
 
-    private String[] NurseSL = {"CNA", "LPN","RN"};
-    private String[] TechSL = {"Radiologic","MRI", "Ultrasound"};
+    private static String[] NurseSL = {"CNA", "LPN", "RN"};
+    private String[] TechSL = {"Radiologic", "MRI", "Ultrasound"};
     private String[] DocSL = {"Pediatrics", "Surgical", "Family"};
-    
+
     private boolean isFree; //determines if they are free
 
+    private LinkedList<Nurse>[] nurselist;
+    private LinkedList<Tech>[] techlist;
+    private LinkedList<Doc>[] doclist;
     
-    class NurseType {
+    public static void main(String [] args){
+    
+    System.out.println(NurseSL.toString());
+    
+    }
+
+    class Nurse {
 
         String name;
         int ID;
@@ -31,7 +42,7 @@ public class Main {
 //        int exp;//for now, join date and exp are integers
 
         //up next, add default constructor
-        NurseType(String name, int ID, String spec) {
+        Nurse(String name, int ID, String spec) {
             this.name = name;
             this.ID = ID;
             this.spec = spec;
@@ -39,7 +50,7 @@ public class Main {
         }
     }
 
-    class TechType {
+    class Tech {
 
         String name;
         int ID;
@@ -48,15 +59,15 @@ public class Main {
 //        int exp;//for now, join date and exp are integers
 
         //up next, add default constructor
-        TechType(String name, int ID, String spec) {
+        Tech(String name, int ID, String spec) {
             this.name = name;
             this.ID = ID;
             this.spec = spec;
 
         }
     }
-    
-    class DocType {
+
+    class Doc {
 
         String name;
         int ID;
@@ -65,14 +76,14 @@ public class Main {
 //        int exp;//for now, join date and exp are integers
 
         //up next, add default constructor
-        DocType(String name, int ID, String spec) {
+        Doc(String name, int ID, String spec) {
             this.name = name;
             this.ID = ID;
             this.spec = spec;
 
         }
     }
-    
+
 }
 /*
 Nurse Type will include

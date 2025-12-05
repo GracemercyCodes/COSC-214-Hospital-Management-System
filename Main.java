@@ -11,14 +11,11 @@ import java.util.*;
 // So far in this document i've come up with custom object classes for Nurses, Tech and doctors
 // Implemented 3 specialties for each type as String Arrays.
 // Created a way for the user to  registeraAs a Nurse, Tech or Doc)
-
 //  Next steps: add some default users
 //              Make sure user can add themselves to a doctor nurse or tech list
 //              Then add an option to see if you exist in the list
-
 // Next Steps: Create a schedule that illustrates when a nurse technichian or doctor is available using isFree
 // Next Next Steps: Once its successful with console, replace the system dialog with JOptionPane
-
 public class Main {
 
     private static String[] NurseSL = {"CNA", "LPN", "RN"};
@@ -37,14 +34,14 @@ public class Main {
         int choice;
 
         System.out.println("Greetings user, please enter your profile type");
-        System.out.println("Option 1: Doctor\nOption 2: Nurse\nOption 3: Technician");
+        System.out.println("Option 1: Doctor\nOption 2: Nurse\nOption 3: Technician" + "\nOption 0: exit");
         choice = scnr.nextInt();
         scnr.nextLine(); // fix 2: consume newline
-        
+
         String name = "";
         int ID = 000000;
         String spec = "";
-        
+
         boolean exit = false;
 
         while (!exit) {
@@ -55,6 +52,7 @@ public class Main {
 
                     Doc doc = new Doc(name, ID, spec);
                     System.out.println("Enter your name");
+                    
                     doc.name = scnr.nextLine();
 
                     System.out.println("Enter your ID number [6 digits]");
@@ -63,17 +61,22 @@ public class Main {
                         System.out.println("Invalid ID");
                         doc.ID = scnr.nextInt();
                     }
+                    scnr.nextLine();
 
                     System.out.println("Select your speciality");
                     System.out.println("1: " + DocSL[0] + "\n2: " + DocSL[1] + "\n3: " + DocSL[2]);
                     int docChoice = scnr.nextInt();
+
                     switch (docChoice) {
                         case 1:
                             doc.spec = DocSL[0];
+                            break;
                         case 2:
                             doc.spec = DocSL[1];
+                            break;
                         case 3:
                             doc.spec = DocSL[2];
+                            break;
 
                     }//end mini switch case
 
@@ -101,16 +104,18 @@ public class Main {
                     switch (nurseChoice) {
                         case 1:
                             nurse.spec = NurseSL[0];
+                            break;
                         case 2:
                             nurse.spec = NurseSL[1];
+                            break;
                         case 3:
                             nurse.spec = NurseSL[2];
+                            break;
 
                     }//end mini switch case
                     System.out.println("Name: " + nurse.name + "\nID: " + nurse.ID + "\nSpeciality: " + nurse.spec);
                     exit = true;
-                    
-                    
+
                     break;
                 case 3:
                     // Option 3: Technician
@@ -119,6 +124,7 @@ public class Main {
                     System.out.println("Nurse");
                     Tech tech = new Tech(name, ID, spec);
                     System.out.println("Enter your name");
+                    scnr.nextLine();
                     tech.name = scnr.nextLine();
 
                     System.out.println("Enter your ID number [6 digits]");
@@ -134,25 +140,30 @@ public class Main {
                     switch (techChoice) {
                         case 1:
                             tech.spec = NurseSL[0];
+                            break;
                         case 2:
                             tech.spec = NurseSL[1];
+                            break;
                         case 3:
                             tech.spec = NurseSL[2];
+                            break;
 
                     }//end mini switch case
                     System.out.println("Name: " + tech.name + "\nID: " + tech.ID + "\nSpeciality: " + tech.spec);
                     exit = true;
-                    
-                    
-                    
+
                     break;
                 case 0:
                     //exits
                     System.out.println("exiting...");
+
                     exit = true; // exits program
+                    break;
                 default:
                     System.out.println("Invalid input, please select an option");
-                    continue;
+                    System.out.println("Option 1: Doctor\nOption 2: Nurse\nOption 3: Technician");
+                    choice = scnr.nextInt();
+                    break;
 
             }
         }

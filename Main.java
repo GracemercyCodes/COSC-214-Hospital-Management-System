@@ -3,186 +3,253 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 import java.util.*;
+import java.time.LocalDate;
+import java.time.Month;
 
 /**
  *
  * @author gmrgk
  */
-// So far in this document i've come up with custom object classes for Nurses, Tech and doctors
-// Implemented 3 specialties for each type as String Arrays.
-// Created a way for the user to  registeraAs a Nurse, Tech or Doc)
-//  Next steps: add some default users
-//              Make sure user can add themselves to a doctor nurse or tech list
-//              Then add an option to see if you exist in the list
+// Warning: Nurse is buggy, will fix
+//Changes made: Program now asks if you are employed at the hospital or entering as a patient. I have left the patient case empty for my teammate to tackle
+//Dates have been added. There is now a join date and an expiry date for employees, as well as a DOB parameter for the patient.
+//
+// An admin Role to over see schedules and pay
+
 // Next Steps: Create a schedule that illustrates when a nurse technichian or doctor is available using isFree
 // Next Next Steps: Once its successful with console, replace the system dialog with JOptionPane
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+import java.util.*;
+
+/**
+ *
+ * @author gmrgk
+ */
 public class Main {
 
     private static String[] NurseSL = {"CNA", "LPN", "RN"};
     private static String[] TechSL = {"Radiologic", "MRI", "Ultrasound"};
     private static String[] DocSL = {"Pediatrics", "Surgical", "Family"};
 
-    private boolean isFree; //determines if they are free
-
-    private LinkedList<Nurse>[] nurselist;
-    private LinkedList<Tech>[] techlist;
-    private LinkedList<Doc>[] doclist;
+    private static LinkedList<Nurse> nurselist = new LinkedList<>();
+    private static LinkedList<Tech> techlist = new LinkedList<>();
+    private static LinkedList<Doc> doclist = new LinkedList<>();
 
     public static void main(String[] args) {
 
+        // DEFAULT USERS
+        nurselist.add(
+                new Nurse("Usagi", 300678, NurseSL[0],
+                        LocalDate.of(2020, 1, 10), //joined in January 10 2020
+                        LocalDate.of(2030, 1, 10)) //card expires in 2030
+        );
+
+        nurselist.add(
+                new Nurse("Minako", 220878, NurseSL[2],
+                        LocalDate.of(2020, 1, 10),
+                        LocalDate.of(2030, 1, 10))
+        );
+
+        /*
+        employeelist.add(
+                new Employee("Name", XXXXXX, employSL[X],
+                        LocalDate.of(2020, 1, 10),
+                        LocalDate.of(2030, 1, 10))
+        );
+
+        
+         */
+        techlist.add(new Tech("Misato", 860912, TechSL[1]));
+        techlist.add(new Tech("Shinji", 630999, TechSL[0]));
+
+        doclist.add(new Doc("Mamoru", 998877, DocSL[1]));
+        doclist.add(new Doc("Seiya", 300776, DocSL[2]));
+
         Scanner scnr = new Scanner(System.in);
-        int choice;
-
-        System.out.println("Greetings user, please enter your profile type");
-        System.out.println("Option 1: Doctor\nOption 2: Nurse\nOption 3: Technician" + "\nOption 0: exit");
-        choice = scnr.nextInt();
-        scnr.nextLine(); // fix 2: consume newline
-
-        String name = "";
-        int ID = 000000;
-        String spec = "";
-
         boolean exit = false;
 
         while (!exit) {
+            System.out.println("Are you an employee or patient? \b[Enter 1 for yes y/ 2 for no]");
+            int choice = scnr.nextInt();
             switch (choice) {
-                case 1:
-                    // Option 1: Doctor
-                    System.out.println("Doctor");
+                case 1://employee case
+                    System.out.println("Omg you got a j*b");
 
-                    Doc doc = new Doc(name, ID, spec);
-                    System.out.println("Enter your name");
-                    
-                    doc.name = scnr.nextLine();
-
-                    System.out.println("Enter your ID number [6 digits]");
-                    doc.ID = scnr.nextInt();
-                    while (doc.ID < 100000 || doc.ID > 999999) {
-                        System.out.println("Invalid ID");
-                        doc.ID = scnr.nextInt();
-                    }
+                    System.out.println("\nDo you already exist in the system?");
+                    System.out.println("1: Yes \n2: No\n0: Exit");
+                    int existsChoice = scnr.nextInt();
                     scnr.nextLine();
 
-                    System.out.println("Select your speciality");
-                    System.out.println("1: " + DocSL[0] + "\n2: " + DocSL[1] + "\n3: " + DocSL[2]);
-                    int docChoice = scnr.nextInt();
+                    switch (existsChoice) {
 
-                    switch (docChoice) {
+                        // USER EXISTS CASE
                         case 1:
-                            doc.spec = DocSL[0];
+                            System.out.println("Enter your ID:");
+                            int checkID = scnr.nextInt();
+
+                            boolean found = false;
+
+                            // check nurse list
+                            for (Nurse n : nurselist) {
+                                if (n.ID == checkID) {
+                                    System.out.println("Found Nurse:");
+                                    System.out.println("Name: " + n.name + "\nSpeciality: " + n.spec);
+                                    found = true;
+                                }
+                            }
+
+                            // check tech list
+                            for (Tech t : techlist) {
+                                if (t.ID == checkID) {
+                                    System.out.println("Found Technician:");
+                                    System.out.println("Name: " + t.name + "\nSpeciality: " + t.spec);
+                                    found = true;
+                                }
+                            }
+
+                            // check doc list
+                            for (Doc d : doclist) {
+                                if (d.ID == checkID) {
+                                    System.out.println("Found Doctor:");
+                                    System.out.println("Dr. " + d.name + "\nSpeciality: " + d.spec);
+                                    found = true;
+                                }
+                            }
+
+                            if (!found) {
+                                System.out.println("No user found with ID " + checkID);
+                            }
                             break;
+
+                        // USER DOES NOT EXIST → Reggister new employee
                         case 2:
-                            doc.spec = DocSL[1];
+
+                            System.out.println("Select your profile type to register:");
+                            System.out.println("1: Doctor");
+                            System.out.println("2: Nurse");
+                            System.out.println("3: Technician");
+                            int typeChoice = scnr.nextInt();
+                            scnr.nextLine();
+
+                            switch (typeChoice) {
+
+                                // Doctor
+                                case 1:
+                                    Doc doc = new Doc("", 0, "");
+
+                                    System.out.println("Enter your name");
+                                    doc.name = scnr.nextLine();
+
+                                    System.out.println("Enter your ID [6 digits]");
+                                    doc.ID = scnr.nextInt();
+                                    while (doc.ID < 100000 || doc.ID > 999999) {
+                                        System.out.println("Invalid ID");
+                                        doc.ID = scnr.nextInt();
+                                    }
+
+                                    System.out.println("Select your speciality");
+                                    System.out.println("1: " + DocSL[0] + "\n2: " + DocSL[1] + "\n3: " + DocSL[2]);
+                                    int docChoice = scnr.nextInt();
+                                    doc.spec = DocSL[docChoice - 1];
+
+                                    doclist.add(doc);
+
+                                    System.out.println("\nAdded Doctor:");
+                                    System.out.println("Dr. " + doc.name + "\nID: " + doc.ID + "\nSpeciality: " + doc.spec);
+                                    break;
+
+                                // Nurse
+                                case 2:
+                                    Nurse nurse = new Nurse("", 0, "",);
+
+                                    System.out.println("Enter your name");
+                                    nurse.name = scnr.nextLine();
+
+                                    System.out.println("Enter your ID [6 digits]");
+                                    nurse.ID = scnr.nextInt();
+                                    while (nurse.ID < 100000 || nurse.ID > 999999) {
+                                        System.out.println("Invalid ID");
+                                        nurse.ID = scnr.nextInt();
+                                    }
+
+                                    System.out.println("Select your speciality");
+                                    System.out.println("1: " + NurseSL[0] + "\n2: " + NurseSL[1] + "\n3: " + NurseSL[2]);
+                                    int nurseChoice = scnr.nextInt();
+                                    nurse.spec = NurseSL[nurseChoice - 1];
+
+                                    nurselist.add(nurse);
+
+                                    System.out.println("\nAdded Nurse:");
+                                    System.out.println("Name: " + nurse.name + "\nID: " + nurse.ID + "\nSpeciality: " + nurse.spec);
+                                    break;
+
+                                // Technichian
+                                case 3:
+                                    Tech tech = new Tech("", 0, "");
+
+                                    System.out.println("Enter your name");
+                                    tech.name = scnr.nextLine();
+
+                                    System.out.println("Enter your ID [6 digits]");
+                                    tech.ID = scnr.nextInt();
+                                    while (tech.ID < 100000 || tech.ID > 999999) {
+                                        System.out.println("Invalid ID");
+                                        tech.ID = scnr.nextInt();
+                                    }
+
+                                    System.out.println("Select your speciality");
+                                    System.out.println("1: " + TechSL[0] + "\n2: " + TechSL[1] + "\n3: " + TechSL[2]);
+                                    int techChoice = scnr.nextInt();
+                                    tech.spec = TechSL[techChoice - 1];
+
+                                    techlist.add(tech);
+
+                                    System.out.println("\nAdded Technician:");
+                                    System.out.println("Name: " + tech.name + "\nID: " + tech.ID + "\nSpeciality: " + tech.spec);
+                                    break;
+                            }
                             break;
-                        case 3:
-                            doc.spec = DocSL[2];
+
+                        // EXIT
+                        case 0:
+                            exit = true;
+                            System.out.println("Exiting...");
                             break;
 
-                    }//end mini switch case
-
-                    System.out.println("Dr. " + doc.name + "\nID: " + doc.ID + "\nSpeciality: " + doc.spec);
-                    exit = true;// for now it ends the program
-
-                    break;
-                case 2:
-                    // Option 2: Nurse
-                    System.out.println("Nurse");
-                    Nurse nurse = new Nurse(name, ID, spec);
-                    System.out.println("Enter your name");
-                    nurse.name = scnr.nextLine();
-
-                    System.out.println("Enter your ID number [6 digits]");
-                    nurse.ID = scnr.nextInt();
-                    while (nurse.ID < 100000 || nurse.ID > 999999) {
-                        System.out.println("Invalid ID");
-                        nurse.ID = scnr.nextInt();
+                        default:
+                            System.out.println("Invalid choice");
                     }
 
-                    System.out.println("Select your speciality");
-                    System.out.println("1: " + NurseSL[0] + "\n2: " + NurseSL[1] + "\n3: " + NurseSL[2]);
-                    int nurseChoice = scnr.nextInt();
-                    switch (nurseChoice) {
-                        case 1:
-                            nurse.spec = NurseSL[0];
-                            break;
-                        case 2:
-                            nurse.spec = NurseSL[1];
-                            break;
-                        case 3:
-                            nurse.spec = NurseSL[2];
-                            break;
-
-                    }//end mini switch case
-                    System.out.println("Name: " + nurse.name + "\nID: " + nurse.ID + "\nSpeciality: " + nurse.spec);
-                    exit = true;
-
                     break;
-                case 3:
-                    // Option 3: Technician
-                    System.out.println("Technician");
-                    // Option 2: Nurse
-                    System.out.println("Nurse");
-                    Tech tech = new Tech(name, ID, spec);
-                    System.out.println("Enter your name");
-                    scnr.nextLine();
-                    tech.name = scnr.nextLine();
-
-                    System.out.println("Enter your ID number [6 digits]");
-                    tech.ID = scnr.nextInt();
-                    while (tech.ID < 100000 || tech.ID > 999999) {//checks if ID is right length
-                        System.out.println("Invalid ID");
-                        tech.ID = scnr.nextInt();
-                    }
-
-                    System.out.println("Select your speciality");
-                    System.out.println("1: " + TechSL[0] + "\n2: " + TechSL[1] + "\n3: " + TechSL[2]);
-                    int techChoice = scnr.nextInt();
-                    switch (techChoice) {
-                        case 1:
-                            tech.spec = NurseSL[0];
-                            break;
-                        case 2:
-                            tech.spec = NurseSL[1];
-                            break;
-                        case 3:
-                            tech.spec = NurseSL[2];
-                            break;
-
-                    }//end mini switch case
-                    System.out.println("Name: " + tech.name + "\nID: " + tech.ID + "\nSpeciality: " + tech.spec);
-                    exit = true;
-
-                    break;
-                case 0:
-                    //exits
-                    System.out.println("exiting...");
-
-                    exit = true; // exits program
-                    break;
-                default:
-                    System.out.println("Invalid input, please select an option");
-                    System.out.println("Option 1: Doctor\nOption 2: Nurse\nOption 3: Technician");
-                    choice = scnr.nextInt();
+                case 2: // Patient Case
+                    System.out.println("Omg ur sick");
                     break;
 
             }
+
         }
     }
 
+    // Custom Object classes
     static class Nurse {
 
         String name;
         int ID;
-        String spec; //short for speciality
-//        int joined;
-//        int exp;//for now, join date and exp are integers
+        String spec;
+        LocalDate joinDate;
+        LocalDate expDate;
 
-        //up next, add default constructor
-        Nurse(String name, int ID, String spec) {
+        boolean isFree = true; //boolean to determine if they are free or not
+
+        Nurse(String name, int ID, String spec, LocalDate joinDate, LocalDate expDate) {
             this.name = name;
             this.ID = ID;
             this.spec = spec;
-
+            this.joinDate = joinDate;
+            this.expDate = expDate;
         }
     }
 
@@ -190,16 +257,17 @@ public class Main {
 
         String name;
         int ID;
-        String spec; //short for speciality
-//        int joined;
-//        int exp;//for now, join date and exp are integers
+        String spec;
 
-        //up next, add default constructor
+        LocalDate joinDate;
+        LocalDate expDate;
+
+        boolean isFree = true;
+
         Tech(String name, int ID, String spec) {
             this.name = name;
             this.ID = ID;
             this.spec = spec;
-
         }
     }
 
@@ -207,20 +275,51 @@ public class Main {
 
         String name;
         int ID;
-        String spec; //short for speciality
-//        int joined;
-//        int exp;//for now, join date and exp are integers
+        String spec;
 
-        //up next, add default constructor
+        LocalDate joinDate;
+        LocalDate expDate;
+
+        boolean isFree = true;
+
         Doc(String name, int ID, String spec) {
             this.name = name;
             this.ID = ID;
             this.spec = spec;
-
         }
     }
 
+    static class Patient {
+
+        //Store and retrieve patient details such as name, age, diagnosis, treatment history, etc.
+        String name;
+        int age;
+        String diagnosis;
+        float priority;
+
+        LocalDate dateOfBirth;
+
+        Patient(String name, int age, String diagnosis, float priority, LocalDate dateOfBirth) {
+            this.name = name;
+            this.age = age;
+            this.diagnosis = diagnosis;
+            this.priority = priority;
+            this.dateOfBirth = dateOfBirth;
+        }
+    }
+
+    //dater 
+    public static LocalDate getDateInput(Scanner scnr, String label) {
+        System.out.println("Enter " + label + " (YYYY MM DD):");
+        int y = scnr.nextInt();
+        int m = scnr.nextInt();
+        int d = scnr.nextInt();
+        scnr.nextLine();
+        return LocalDate.of(y, m, d);
+    }
+
 }
+
 /*
 Nurse Type will include
 String Name, int ID (possibly 6 digit), String Speciality, Tuple Join_Date, Tuple Exp_Date

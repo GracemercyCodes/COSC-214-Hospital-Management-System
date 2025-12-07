@@ -15,7 +15,6 @@ import java.time.Month;
 //Dates have been added. There is now a join date and an expiry date for employees, as well as a DOB parameter for the patient.
 //
 // An admin Role to over see schedules and pay
-
 // Next Steps: Create a schedule that illustrates when a nurse technichian or doctor is available using isFree
 // Next Next Steps: Once its successful with console, replace the system dialog with JOptionPane
 /*
@@ -42,18 +41,13 @@ public class Main {
 
         // DEFAULT USERS
         nurselist.add(
-                new Nurse("Usagi", 300678, NurseSL[0],
-                        LocalDate.of(2020, 1, 10), //joined in January 10 2020
-                        LocalDate.of(2030, 1, 10)) //card expires in 2030
-        );
+                new Nurse("Usagi", 300678, NurseSL[0]));
 
         nurselist.add(
-                new Nurse("Minako", 220878, NurseSL[2],
-                        LocalDate.of(2020, 1, 10),
-                        LocalDate.of(2030, 1, 10))
-        );
+                new Nurse("Minako", 220878, NurseSL[2]));
 
         /*
+        //alternate version that takes Local Date as  parameter
         employeelist.add(
                 new Employee("Name", XXXXXX, employSL[X],
                         LocalDate.of(2020, 1, 10),
@@ -163,7 +157,7 @@ public class Main {
 
                                 // Nurse
                                 case 2:
-                                    Nurse nurse = new Nurse("", 0, "",);
+                                    Nurse nurse = new Nurse("", 0, "");
 
                                     System.out.println("Enter your name");
                                     nurse.name = scnr.nextLine();
@@ -244,12 +238,11 @@ public class Main {
 
         boolean isFree = true; //boolean to determine if they are free or not
 
-        Nurse(String name, int ID, String spec, LocalDate joinDate, LocalDate expDate) {
+        Nurse(String name, int ID, String spec) {
             this.name = name;
             this.ID = ID;
             this.spec = spec;
-            this.joinDate = joinDate;
-            this.expDate = expDate;
+
         }
     }
 

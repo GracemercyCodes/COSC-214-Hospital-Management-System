@@ -1,0 +1,175 @@
+package hmsProject;
+import java.util.*;
+
+
+public class HMSProject {
+	public static void main (String[] args) {
+		Scanner userInput = new Scanner (System.in);
+		Priority triage = new Priority();
+		
+		System.out.println("====Hospital Traige Center====");
+		System.out.println("How many patients are being added? ");
+		int numPatients = userInput.nextInt();
+		userInput.nextLine();
+		
+		for (int i = 0; i < numPatients; i++) {
+            System.out.print("Enter patient name: ");
+            String name = userInput.nextLine();
+
+            System.out.print("Enter priority (1=CRITICAL, 2=URGENT, 3=ROUTINE): ");
+            int priority = userInput.nextInt();
+            userInput.nextLine(); 
+
+            triage.addPatient(new Patient(name, priority));
+        }
+
+        triage.displayQueues();
+
+        System.out.println("Next patient: " + triage.getNextPatient());
+        triage.displayQueues();
+
+        // Add employees
+        System.out.println("\n=== Hospital Employees ===");
+        System.out.print("How many employees do you want to add? ");
+        int numEmployees = userInput.nextInt();
+        userInput.nextLine(); 
+
+        List<Employee> employees = new ArrayList<>();
+        
+        for (int i = 0; i < numEmployees; i++) {
+            System.out.print("Enter employee name: ");
+            String name = userInput.nextLine();
+
+            System.out.print("Enter role: ");
+            String role = userInput.nextLine();
+
+            System.out.print("Enter salary: ");
+            double salary = userInput.nextDouble();
+            userInput.nextLine(); 
+
+            employees.add(new Employee(name, role, salary));
+        }
+
+        System.out.println("\n--- Employee List ---");
+        for (Employee e : employees) {
+            System.out.println(e);
+        }
+
+        userInput.close();
+        
+	}
+
+}
+
+//Patient class
+class Patient {
+ private String name;
+ private int priority; 
+
+ public Patient(String name, int priority) {
+     this.name = name;
+     this.priority = priority;
+ }
+
+ public String getName() {
+     return name;
+ }
+
+ public int getPriority() {
+     return priority;
+ }
+
+ @Override
+ public String toString() {
+     String priorityLabel;
+     switch (priority) {
+         case 1: priorityLabel = "CRITICAL"; break;
+         case 2: priorityLabel = "URGENT"; break;
+         case 3: priorityLabel = "ROUTINE"; break;
+         default: priorityLabel = "UNKNOWN"; break;
+     }
+     return name + " (" + priorityLabel + ")";
+ }
+ 
+}
+
+//Hospital management system
+class Priority {
+	Queue<Patient> criticalQueue = new LinkedList<>();
+	Queue<Patient> urgentQueue = new LinkedList<>();
+	Queue<Patient> routineQueue = new LinkedList<>();
+	Queue<Patient> unknownQueue = new LinkedList<>();
+
+ // Add patient to appropriate queue
+ public void addPatient(Patient patient) {
+     if (patient.getPriority() == 1) {
+         criticalQueue.add(patient);
+     } else if (patient.getPriority() == 2) {
+         urgentQueue.add(patient);
+     } else if (patient.getPriority() == 3) {
+         routineQueue.add(patient);
+     }
+     else {
+    	 unknownQueue.add(patient);
+     }
+     
+ }
+
+
+//Get next patient to be treated
+public Patient getNextPatient() {
+    if (!criticalQueue.isEmpty()) {
+        return criticalQueue.poll();
+    } else if (!urgentQueue.isEmpty()) {
+        return urgentQueue.poll();
+    } else if (!routineQueue.isEmpty()) {
+        return routineQueue.poll();
+    } else if (!unknownQueue.isEmpty()) {
+    	return unknownQueue.poll();
+    }else {
+    }
+        return null;
+    }
+
+
+
+
+//Display all queues
+public void displayQueues() {
+    System.out.println("Critical: " + criticalQueue);
+    System.out.println("Urgent: " + urgentQueue);
+    System.out.println("Routine: " + routineQueue);
+    System.out.println("Unkown: " + unknownQueue);
+}
+
+}
+
+//Employee class
+class Employee {
+ private String name;
+ private String role;
+ private double salary;
+
+ public Employee(String name, String role, double salary) {
+     this.name = name;
+     this.role = role;
+     this.salary = salary;
+ }
+
+ public String getName() {
+     return name;
+ }
+
+ public String getRole() {
+     return role;
+ }
+
+ public double getSalary() {
+     return salary;
+ }
+ @Override
+ public String toString() {
+     return name + " - " + role + " ($" + salary + ")";
+ }
+}
+

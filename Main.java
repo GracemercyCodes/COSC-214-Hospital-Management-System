@@ -3,6 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 import java.util.*;
+import javax.swing.*;
+import java.awt.*;
 import java.time.LocalDate;
 import java.time.Month;
 
@@ -33,35 +35,89 @@ public class Main {
     private static String[] TechSL = {"Radiologic", "MRI", "Ultrasound"};
     private static String[] DocSL = {"Pediatrics", "Surgical", "Family"};
 
+    //Staff LLs
     private static LinkedList<Nurse> nurselist = new LinkedList<>();
     private static LinkedList<Tech> techlist = new LinkedList<>();
     private static LinkedList<Doc> doclist = new LinkedList<>();
 
+    //Staff Hashmaps for fast search
+    private static HashMap<Integer, Nurse> nHash = new HashMap<>();// -> <staff.ID, staff>
+    private static HashMap<Integer, Tech> tHash = new HashMap<>();
+    private static HashMap<Integer, Doc> docHash = new HashMap<>();
+
+    //Patient LL and Hashmap
+    private static LinkedList<Patient> patientList = new LinkedList<>();
+    private static HashMap<Integer, Patient> pHash = new HashMap<>(); // <patient.ID, patient>
+
+    //Apppointment queue
+    private static Queue<Appointment> appointmentQueue = new LinkedList<>();
+
     public static void main(String[] args) {
 
         // DEFAULT USERS
-        nurselist.add(
-                new Nurse("Usagi", 300678, NurseSL[0]));
-
-        nurselist.add(
-                new Nurse("Minako", 220878, NurseSL[2]));
-
-        /*
-        //alternate version that takes Local Date as  parameter
-        employeelist.add(
-                new Employee("Name", XXXXXX, employSL[X],
-                        LocalDate.of(2020, 1, 10),
-                        LocalDate.of(2030, 1, 10))
-        );
-
-        
+        /* Template/ pseudo for adding employees
+        stafflist.add(new staff(
+                "", //name
+                XXXXXX, // 6 digit ID
+                specialityList[X], //type of specialization in their career
+                LocalDate.of(y, m, d), //join date
+                LocalDate.of(y, m, d) //expiry date
+        ));
          */
-        techlist.add(new Tech("Misato", 860912, TechSL[1]));
-        techlist.add(new Tech("Shinji", 630999, TechSL[0]));
+        nurselist.add(new Nurse(
+                "Usagi",
+                300678,
+                NurseSL[0],
+                LocalDate.of(1992, 3, 7),
+                LocalDate.of(2027, 2, 8)
+        ));
 
-        doclist.add(new Doc("Mamoru", 998877, DocSL[1]));
-        doclist.add(new Doc("Seiya", 300776, DocSL[2]));
+        nurselist.add(new Nurse(
+                "Minako",
+                220878,
+                NurseSL[2],
+                LocalDate.of(1991, 8, 3),
+                LocalDate.of(2030, 1, 10)
+        ));
 
+        techlist.add(new Tech(
+                "Misato",
+                860912,
+                TechSL[1],
+                LocalDate.of(2010, 2, 14),
+                LocalDate.of(2026, 4, 1)
+        ));
+
+        techlist.add(new Tech(
+                "Shinji", //name
+                630999, // 6 digit ID
+                TechSL[0], //type of specialization in their career
+                LocalDate.of(2015, 3, 14), //join date
+                LocalDate.of(2030, 6, 28) //expiry date
+        ));
+
+//        techlist.add(new Tech("Misato", 860912, TechSL[1]));
+//        techlist.add(new Tech("Shinji", 630999, TechSL[0]));
+        doclist.add(new Doc(
+                "Mamoru",
+                998877,
+                DocSL[1],
+                LocalDate.of(1992, 3, 7),
+                LocalDate.of(2027, 2, 8)
+        ));
+
+        doclist.add(new Doc(
+                "Seiya",
+                300776,
+                DocSL[2],
+                LocalDate.of(2020, 1, 10),
+                LocalDate.of(2030, 1, 10)
+        ));
+//        doclist.add(new Doc("Mamoru", 998877, DocSL[1]));
+//        doclist.add(new Doc("Seiya", 300776, DocSL[2]));
+
+        // Adding Patients
+//        patientList.add(new Patient(String name, int ID, int age, String diagnosis, float priority, LocalDate dateOfBirth))
         Scanner scnr = new Scanner(System.in);
         boolean exit = false;
 
@@ -69,8 +125,8 @@ public class Main {
             System.out.println("Are you an employee or patient? \b[Enter 1 for yes y/ 2 for no]");
             int choice = scnr.nextInt();
             switch (choice) {
-                case 1://employee case
-                    System.out.println("Omg you got a j*b");
+                case 1://Staff Case
+                    //System.out.println("Omg you got a j*b"); meme line to test
 
                     System.out.println("\nDo you already exist in the system?");
                     System.out.println("1: Yes \n2: No\n0: Exit");
@@ -150,6 +206,7 @@ public class Main {
                                     doc.spec = DocSL[docChoice - 1];
 
                                     doclist.add(doc);
+                                    docHash.put(doc.ID, doc);
 
                                     System.out.println("\nAdded Doctor:");
                                     System.out.println("Dr. " + doc.name + "\nID: " + doc.ID + "\nSpeciality: " + doc.spec);
@@ -175,6 +232,7 @@ public class Main {
                                     nurse.spec = NurseSL[nurseChoice - 1];
 
                                     nurselist.add(nurse);
+                                    nHash.put(nurse.ID, nurse);
 
                                     System.out.println("\nAdded Nurse:");
                                     System.out.println("Name: " + nurse.name + "\nID: " + nurse.ID + "\nSpeciality: " + nurse.spec);
@@ -200,6 +258,7 @@ public class Main {
                                     tech.spec = TechSL[techChoice - 1];
 
                                     techlist.add(tech);
+                                    tHash.put(tech.ID, tech);
 
                                     System.out.println("\nAdded Technician:");
                                     System.out.println("Name: " + tech.name + "\nID: " + tech.ID + "\nSpeciality: " + tech.spec);
@@ -219,7 +278,56 @@ public class Main {
 
                     break;
                 case 2: // Patient Case
-                    System.out.println("Omg ur sick");
+                    //System.out.println("Omg ur sick"); also meme case
+                    System.out.println("\nDo you already exist in the system?");
+                    System.out.println("1: Yes \n2: No\n0: Exit");
+                    int existsChoice2 = scnr.nextInt(); //exists choice is already in the Staff case
+                    scnr.nextLine();
+                    switch (existsChoice2) {
+                        case 1:
+                            //fetch existing name in the system
+                            System.out.print("Enter Patient ID: ");
+                            int searchID = scnr.nextInt();
+                            scnr.nextLine();
+                            Patient p = pHash.get(searchID);
+                            if (p == null) {
+                                System.out.println("User not found");
+                            } else {
+                                // String name, int ID, int age, String diagnosis, float priority, LocalDate dateOfBirth
+                                System.out.println(p.name + " " + p.ID + " " + p.age + p.diagnosis + p.priority + p.dateOfBirth);
+                            }
+
+                            break;
+                        case 2:
+                            //Add yourself to the system
+
+                            System.out.println("Enter your name");
+                            String name = scnr.nextLine();
+                            System.out.println("Now choose your ID [6 digits]");
+                            int pID = scnr.nextInt();
+                            while (pID < 100000 || pID > 999999) { //prevents you from making a longer ID
+                                System.out.println("Invalid ID");
+                                pID = scnr.nextInt();
+                            }
+                            System.out.println("Enter your age");
+                            int age = scnr.nextInt();
+                            scnr.nextLine();
+
+                            LocalDate dob = getDateInput(scnr, "Your Date of Birth ");
+
+                            Patient patient = new Patient(name, pID, age, "Unknown", 0.0f, dob);//patients dont set their own priority or diagnosis
+                            patientList.add(patient);
+                            pHash.put(patient.ID, patient);
+
+                            break;
+                        case 0:
+                            exit = true;
+                            System.out.println("Exiting");
+                            break;
+                    }
+
+                    //in here we will mirror what went down in the employee case
+                    //check if patient exists, if patient is in the list, they get info on who 
                     break;
 
             }
@@ -228,6 +336,7 @@ public class Main {
     }
 
     // Custom Object classes
+    //People: Nurse, Tech,Doc,Patients
     static class Nurse {
 
         String name;
@@ -238,11 +347,16 @@ public class Main {
 
         boolean isFree = true; //boolean to determine if they are free or not
 
-        Nurse(String name, int ID, String spec) {
+        Nurse(String name, int ID, String spec, LocalDate joinDate, LocalDate expDate) {
             this.name = name;
             this.ID = ID;
             this.spec = spec;
+            this.joinDate = joinDate;
+            this.expDate = expDate;
+        }
 
+        Nurse(String name, int ID, String spec) {
+            this(name, ID, spec, LocalDate.now(), LocalDate.now().plusYears(1)); // or nulls or default values
         }
     }
 
@@ -257,10 +371,16 @@ public class Main {
 
         boolean isFree = true;
 
-        Tech(String name, int ID, String spec) {
+        Tech(String name, int ID, String spec, LocalDate joinDate, LocalDate expDate) {
             this.name = name;
             this.ID = ID;
             this.spec = spec;
+            this.joinDate = joinDate;
+            this.expDate = expDate;
+        }
+
+        Tech(String name, int ID, String spec) {
+            this(name, ID, spec, LocalDate.now(), LocalDate.now().plusYears(1));
         }
     }
 
@@ -275,10 +395,16 @@ public class Main {
 
         boolean isFree = true;
 
-        Doc(String name, int ID, String spec) {
+        Doc(String name, int ID, String spec, LocalDate joinDate, LocalDate expDate) {
             this.name = name;
             this.ID = ID;
             this.spec = spec;
+            this.joinDate = joinDate;
+            this.expDate = expDate;
+        }
+
+        Doc(String name, int ID, String spec) {
+            this(name, ID, spec, LocalDate.now(), LocalDate.now().plusYears(1));
         }
     }
 
@@ -287,21 +413,27 @@ public class Main {
         //Store and retrieve patient details such as name, age, diagnosis, treatment history, etc.
         String name;
         int age;
+        int ID;
         String diagnosis;
         float priority;
 
         LocalDate dateOfBirth;
 
-        Patient(String name, int age, String diagnosis, float priority, LocalDate dateOfBirth) {
+        Patient(String name, int ID, int age, String diagnosis, float priority, LocalDate dateOfBirth) {
             this.name = name;
             this.age = age;
+            this.ID = ID;
             this.diagnosis = diagnosis;
             this.priority = priority;
             this.dateOfBirth = dateOfBirth;
         }
+
+//        Patient(String name, int age, String diagnosis, float priority) {
+//            this(name, age, diagnosis,priority, LocalDate.now(), LocalDate.now().plusYears(1)); // or nulls or default values
+//        }
     }
 
-    //dater 
+    //Date Setter 
     public static LocalDate getDateInput(Scanner scnr, String label) {
         System.out.println("Enter " + label + " (YYYY MM DD):");
         int y = scnr.nextInt();
@@ -311,31 +443,18 @@ public class Main {
         return LocalDate.of(y, m, d);
     }
 
+    static class Appointment {
+
+        Patient patient;
+        Doc doctor;
+        LocalDate date;
+        // time slot or reason
+        /*
+        When a patient wants an appointment:
+            Check if the doctor exists (search map or list).
+            Check if doctor is free at that time (using boolean isFree)
+            If both sucessful, declare an Appointment and offer() it into appointmentQueue
+         */
+    }
+
 }
-
-/*
-Nurse Type will include
-String Name, int ID (possibly 6 digit), String Speciality, Tuple Join_Date, Tuple Exp_Date
-Nurse Speciality List (NurseSL): CNA, LPN,RN
-For now I'm using only 3 specialties per type, i can add the rest later
-
-(Actual NSL: CNA, LPN,RN,Admin, L&D, Pediatrics, Trauma, NP, Surgery)
-[What the nurse lists stand for:]
-CNA - Certified nursing assistant
-LPN - Licensed Practitioner nurse
-RN - Registered Nurse
-NP nurse practitioner
-L&D Labor and delivery
-
-Tech Type will include
-String Name, int ID (possibly 6 digit), String Speciality, Tuple Join_Date, Tuple Exp_Date
-Tech specialty list(TechSL): Radiologic, MRI, Ultrasound
-(Actual TSL: Radiologic, MRI, Ultrasound, Nuclear_Med, Cardio, EEG, Surgical)
-
-Haven't done Doc Type (for doctors)
-in the future the Speciality list arrays may be replaced with hashtables
-Doc Speciality List
-Pediatrics, Surgery, Family, Psychiatry,Radiology
-
-Boolean free will be used to determine when a nurse, tech or doctor is free
- */

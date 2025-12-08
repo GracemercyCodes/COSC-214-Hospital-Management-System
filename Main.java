@@ -6,16 +6,13 @@ import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
-import java.time.Month;
 
 /**
  *
  * @author gmrgk
  */
-// Warning: Nurse is buggy, will fix
-//Changes made: Program now asks if you are employed at the hospital or entering as a patient. I have left the patient case empty for my teammate to tackle
-//Dates have been added. There is now a join date and an expiry date for employees, as well as a DOB parameter for the patient.
-//
+// Hashmaps have been added
+//Nurse is fixed
 // An admin Role to over see schedules and pay
 // Next Steps: Create a schedule that illustrates when a nurse technichian or doctor is available using isFree
 // Next Next Steps: Once its successful with console, replace the system dialog with JOptionPane
@@ -31,8 +28,15 @@ import java.util.*;
  */
 public class Main {
 
-    private static String[] NurseSL = {"CNA", "LPN", "RN"};
-    private static String[] TechSL = {"Radiologic", "MRI", "Ultrasound"};
+    private static String[] NurseSL = {"CNA", "LPN", "RN", "Admin", "L&D", "Pediatrics", "Trauma", "NP", "Surgery"};
+    /*
+    CNA - Certified nursing assistant
+    LPN - Licensed Practitioner nurse
+    RN - Registered Nurse
+    NP nurse practitioner
+    L&D Labor and delivery
+     */
+    private static String[] TechSL = {"Radiologic", "MRI", "Ultrasound", "Nuclar_Med", "Cardio", "EEG", "Surgical"};
     private static String[] DocSL = {"Pediatrics", "Surgical", "Family"};
 
     //Staff LLs
@@ -294,10 +298,35 @@ public class Main {
                                 System.out.println("User not found");
                             } else {
                                 // String name, int ID, int age, String diagnosis, float priority, LocalDate dateOfBirth
-                                System.out.println(p.name + " " + p.ID + " " + p.age + p.diagnosis + p.priority + p.dateOfBirth);
+
+                            }
+                            /*
+                            1: View my info again
+                            2: Schedule an appointment
+                            0: Back
+                             */
+
+                            System.out.println("1: View my info again \n2: Schedule Appointment\n0: Back");
+                            int pMenu = scnr.nextInt();
+                            switch (pMenu) {
+                                case 1:
+                                    //View info
+                                    System.out.println(p.name + " " + p.ID + " " + p.age + p.diagnosis + p.priority + p.dateOfBirth);
+                                    break;
+                                case 2:
+                                    //Schedule appointment
+                                    //prints doc speciality options
+                                    for (int i = 0; i < doclist.size(); i++) {
+                                        System.out.print(doclist.get(i) + " ");
+                                    }
+
+                                    break;
+                                case 0:
+                                    //goes back
+                                    break;
                             }
 
-                            break;
+                            break; //ends case 1
                         case 2:
                             //Add yourself to the system
 

@@ -6,6 +6,7 @@ import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
+import java.io.*;
 
 /**
  *
@@ -52,6 +53,8 @@ public class Main {
     //Patient LL and Hashmap
     private static LinkedList<Patient> patientList = new LinkedList<>();
     private static HashMap<Integer, Patient> pHash = new HashMap<>(); // <patient.ID, patient>
+    //Priority type
+    private static Priority triage = new Priority();
 
     //Apppointment queue
     private static Queue<Appointment> appointmentQueue = new LinkedList<>();
@@ -59,81 +62,121 @@ public class Main {
     public static void main(String[] args) {
 
         // DEFAULT USERS
-        /* Template/ pseudo for adding employees
-        stafflist.add(new staff(
+        /* Newer Template/Pseudo for adding employees
+        Staff staffX = new staff(
                 "", //name
                 XXXXXX, // 6 digit ID
                 specialityList[X], //type of specialization in their career
                 LocalDate.of(y, m, d), //join date
                 LocalDate.of(y, m, d) //expiry date
+        stafflist.add(staffX) //Adds to their respective LL
+        staffHash.put(staffX.ID,staffX) //Adds to their respective HashMap
         ));
          */
-        nurselist.add(new Nurse(
+        //     ---------Nurses---------
+        Nurse nurse1 = new Nurse(
                 "Usagi",
                 300678,
                 NurseSL[0],
                 LocalDate.of(1992, 3, 7),
                 LocalDate.of(2027, 2, 8)
-        ));
+        );
+        nurselist.add(nurse1);
+        nHash.put(nurse1.ID, nurse1);
 
-        nurselist.add(new Nurse(
+        Nurse nurse2 = new Nurse(
                 "Minako",
                 220878,
                 NurseSL[2],
                 LocalDate.of(1991, 8, 3),
                 LocalDate.of(2030, 1, 10)
-        ));
+        );
+        nurselist.add(nurse2);
+        nHash.put(nurse2.ID, nurse2);
 
-        techlist.add(new Tech(
+        //     ---------Techs---------
+        Tech tech1 = new Tech(
                 "Misato",
                 860912,
                 TechSL[1],
                 LocalDate.of(2010, 2, 14),
-                LocalDate.of(2026, 4, 1)
-        ));
+                LocalDate.of(2026, 4, 1));
+        techlist.add(tech1);
+        tHash.put(tech1.ID, tech1);
 
-        techlist.add(new Tech(
+        Tech tech2 = new Tech(
                 "Shinji", //name
                 630999, // 6 digit ID
                 TechSL[0], //type of specialization in their career
                 LocalDate.of(2015, 3, 14), //join date
                 LocalDate.of(2030, 6, 28) //expiry date
-        ));
+        );
+        techlist.add(tech2);
+        tHash.put(tech2.ID, tech2);
 
-//        techlist.add(new Tech("Misato", 860912, TechSL[1]));
-//        techlist.add(new Tech("Shinji", 630999, TechSL[0]));
-        doclist.add(new Doc(
+        //     ---------Doctors---------
+        Doc doc1 = new Doc(
                 "Mamoru",
                 998877,
                 DocSL[1],
                 LocalDate.of(1992, 3, 7),
                 LocalDate.of(2027, 2, 8)
-        ));
+        );
+        doclist.add(doc1);
+        docHash.put(doc1.ID, doc1);
 
-        doclist.add(new Doc(
+        Doc doc2 = new Doc(
                 "Seiya",
                 300776,
                 DocSL[2],
                 LocalDate.of(2020, 1, 10),
                 LocalDate.of(2030, 1, 10)
-        ));
-//        doclist.add(new Doc("Mamoru", 998877, DocSL[1]));
-//        doclist.add(new Doc("Seiya", 300776, DocSL[2]));
+        );
+        doclist.add(doc2);
+        docHash.put(doc2.ID, doc2);
 
-        // Adding Patients
-//        patientList.add(new Patient(String name, int ID, int age, String diagnosis, float priority, LocalDate dateOfBirth))
+        // Default Patients
+        Patient patient1 = new Patient(
+                "Shadow the Hedgehog", // name
+                111111, // ID
+                50, // age
+                "Unknown", // diagnosis
+                0, // priority to be determined by admin/doctor
+                LocalDate.of(1975, 1, 1) // dob ->  YYYY MM DD
+        );
+        patientList.add(patient1);
+        pHash.put(patient1.ID, patient1);
+
+        Patient patient2 = new Patient(
+                "Hatsune Miku",
+                393939,
+                16,
+                "Unknown",
+                0,
+                LocalDate.of(2008, 3, 9)
+        );
+        patientList.add(patient2);
+        pHash.put(patient2.ID, patient2);
+
+        loadPatientsFromFile("patients.txt");
+
         Scanner scnr = new Scanner(System.in);
         boolean exit = false;
 
         while (!exit) {
-            System.out.println("Are you an employee or patient? \b[Enter 1 for yes y/ 2 for no]");
+            System.out.println("Which are you?");
+            System.out.println("1: Staff");
+            System.out.println("2: Patient");
+            System.out.println("3: Admin");
+            System.out.println("0: Escape");
             int choice = scnr.nextInt();
+
             switch (choice) {
                 case 1://Staff Case
                     //System.out.println("Omg you got a j*b"); meme line to test
 
-                    System.out.println("\nDo you already exist in the system?");
-                    System.out.println("1: Yes \n2: No\n0: Exit");
+                    System.out.println("\nAre you new or Returning?");
+                    System.out.println("1: Returning \n2: New\n0: Exit");
                     int existsChoice = scnr.nextInt();
                     scnr.nextLine();
 
@@ -283,85 +326,157 @@ public class Main {
                     break;
                 case 2: // Patient Case
                     //System.out.println("Omg ur sick"); also meme case
-                    System.out.println("\nDo you already exist in the system?");
-                    System.out.println("1: Yes \n2: No\n0: Exit");
-                    int existsChoice2 = scnr.nextInt(); //exists choice is already in the Staff case
-                    scnr.nextLine();
-                    switch (existsChoice2) {
-                        case 1:
-                            //fetch existing name in the system
-                            System.out.print("Enter Patient ID: ");
-                            int searchID = scnr.nextInt();
-                            scnr.nextLine();
-                            Patient p = pHash.get(searchID);
-                            if (p == null) {
-                                System.out.println("User not found");
-                            } else {
-                                // String name, int ID, int age, String diagnosis, float priority, LocalDate dateOfBirth
+                    boolean patientBack = false;
+                    /*quality of life update that lets you actually stay in the patient menu until you
+                    are done*/
 
-                            }
-                            /*
+                    while (!patientBack) {
+                        System.out.println("\nDo you already exist in the system?");
+                        System.out.println("1: Yes \n2: No\n0: Exit");
+                        int existsChoice2 = scnr.nextInt(); //exists choice is already in the Staff case
+                        scnr.nextLine();
+                        switch (existsChoice2) {
+                            case 1:
+                                //fetch existing name in the system
+                                System.out.print("Enter Patient ID: ");
+                                int searchID = scnr.nextInt();
+                                scnr.nextLine();
+                                Patient p = pHash.get(searchID);
+                                if (p == null) {
+                                    System.out.println("User not found");
+                                } else {
+                                    // String name, int ID, int age, String diagnosis, float priority, LocalDate dateOfBirth
+
+                                }
+                                /*
                             1: View my info again
                             2: Schedule an appointment
                             0: Back
-                             */
+                                 */
 
-                            System.out.println("1: View my info again \n2: Schedule Appointment\n0: Back");
-                            int pMenu = scnr.nextInt();
-                            switch (pMenu) {
-                                case 1:
-                                    //View info
-                                    System.out.println(p.name + " " + p.ID + " " + p.age + p.diagnosis + p.priority + p.dateOfBirth);
-                                    break;
-                                case 2:
-                                    //Schedule appointment
-                                    //prints doc speciality options
-                                    for (int i = 0; i < doclist.size(); i++) {
-                                        System.out.print(doclist.get(i) + " ");
+                                System.out.println("1: View my info again \n2: Schedule Appointment\n0: Back");
+                                int pMenu = scnr.nextInt();
+                                switch (pMenu) {
+                                    case 1:
+                                        //View info
+                                        System.out.println(p.name + ", " + p.ID + ", " + p.age + " Diagnosis: " + p.diagnosis + ", " + p.priority + " " + p.dateOfBirth.toString());
+                                        break;
+                                    case 2:
+                                        //Schedule appointment
+                                        //prints doc speciality options
+                                        for (int i = 0; i < doclist.size(); i++) {
+                                            System.out.print(i + ": ");
+                                            Doc d = doclist.get(i);
+                                            System.out.print(i + ":" + d.toString());
+                                        }
+                                        System.out.println("Which Doctor would you like?");
+                                        int docIndex = scnr.nextInt();
+
+                                        break;
+                                    case 0:
+                                        //goes back
+                                        break;
+                                }
+
+                                break; //ends case 1 (Existing patient)
+                            case 2:
+                                //Add yourself to the system
+
+                                System.out.println("Enter your name");
+                                String name = scnr.nextLine();
+                                System.out.println("Now choose your ID [6 digits]");
+                                int pID = scnr.nextInt();
+                                while (pID < 100000 || pID > 999999) { //prevents you from making a longer ID
+                                    System.out.println("Invalid ID");
+                                    pID = scnr.nextInt();
+                                }
+                                System.out.println("Enter your age");
+                                int age = scnr.nextInt();
+                                scnr.nextLine();
+
+                                LocalDate dob = getDateInput(scnr, "Your Date of Birth ");
+
+                                Patient patient = new Patient(name, pID, age, "Unknown", 0, dob);//patients dont set their own priority or diagnosis
+
+                                patientList.add(patient);
+                                pHash.put(patient.ID, patient);
+                                savePatientsToFile("patients.txt");
+
+                                break;
+
+                            case 0:
+                                patientBack = true;
+                                System.out.println("Exiting Patient Menu");
+                                break;// end exit case
+                        }
+
+                    } //end of patient menu then break
+                    break;
+
+                case 3: // admin case
+                    // Show Admin submenu
+                    // 1: Triage center 
+                    // 2: Manage employees
+                    // 0: Back/Exit
+
+                    boolean adminBack = false;
+                    while (!adminBack) {
+                        System.out.println("What would you like to Check today?");
+                        System.out.println("1: Triage Center\n2: Manage Employees\n0: Back/Exit");
+                        int adMenu = scnr.nextInt();
+                        scnr.nextLine();
+                        switch (adMenu) {
+                            case 1:
+                                //Triage
+
+                                System.out.println("====Hospital Traige Center====");
+                                System.out.println("How many patients are being added? ");
+                                int numPatients = scnr.nextInt();
+                                for (int i = 0; i < numPatients; i++) {
+                                    System.out.print("Enter patient ID: ");
+                                    int ID = scnr.nextInt();
+                                    Patient p = pHash.get(ID);
+                                    if (p != null) {
+                                        System.out.print("Enter priority (1=CRITICAL, 2=URGENT, 3=ROUTINE): ");
+                                        int priority = scnr.nextInt();
+                                        p.priority = priority;
+                                        triage.addPatient(p);
+                                        savePatientsToFile("patients.txt");
+
+                                        scnr.nextLine();
+                                    } else {
+                                        System.out.print("Does not exist/Invalid ID");
                                     }
 
-                                    break;
-                                case 0:
-                                    //goes back
-                                    break;
-                            }
+                                }// end Triage loop
+                                triage.displayQueues();
+                                Patient next = triage.getNextPatient();
+                                System.out.println("Next patient to treat: " + next);
 
-                            break; //ends case 1
-                        case 2:
-                            //Add yourself to the system
+                                break;
+                            case 2:
+                                //employees
 
-                            System.out.println("Enter your name");
-                            String name = scnr.nextLine();
-                            System.out.println("Now choose your ID [6 digits]");
-                            int pID = scnr.nextInt();
-                            while (pID < 100000 || pID > 999999) { //prevents you from making a longer ID
-                                System.out.println("Invalid ID");
-                                pID = scnr.nextInt();
-                            }
-                            System.out.println("Enter your age");
-                            int age = scnr.nextInt();
-                            scnr.nextLine();
+                                break;
+                            case 0:
+                                adminBack = true;
+                                System.out.println("Exiting Admin");
+                                break;// end exit case
 
-                            LocalDate dob = getDateInput(scnr, "Your Date of Birth ");
+                        }
 
-                            Patient patient = new Patient(name, pID, age, "Unknown", 0.0f, dob);//patients dont set their own priority or diagnosis
-                            patientList.add(patient);
-                            pHash.put(patient.ID, patient);
-
-                            break;
-                        case 0:
-                            exit = true;
-                            System.out.println("Exiting");
-                            break;
                     }
-
-                    //in here we will mirror what went down in the employee case
-                    //check if patient exists, if patient is in the list, they get info on who 
                     break;
+
+                case 0: //exit all
+                    exit = true;
+                    System.out.println("Exiting");
+                    break;// end exit case
 
             }
 
         }
+        scnr.close();
     }
 
     // Custom Object classes
@@ -435,6 +550,12 @@ public class Main {
         Doc(String name, int ID, String spec) {
             this(name, ID, spec, LocalDate.now(), LocalDate.now().plusYears(1));
         }
+
+        @Override
+        public String toString() {
+            return "Dr. " + name + " (" + spec + ")";
+        }
+
     }
 
     static class Patient {
@@ -444,11 +565,11 @@ public class Main {
         int age;
         int ID;
         String diagnosis;
-        float priority;
+        int priority;
 
         LocalDate dateOfBirth;
 
-        Patient(String name, int ID, int age, String diagnosis, float priority, LocalDate dateOfBirth) {
+        Patient(String name, int ID, int age, String diagnosis, int priority, LocalDate dateOfBirth) {
             this.name = name;
             this.age = age;
             this.ID = ID;
@@ -457,9 +578,26 @@ public class Main {
             this.dateOfBirth = dateOfBirth;
         }
 
-//        Patient(String name, int age, String diagnosis, float priority) {
-//            this(name, age, diagnosis,priority, LocalDate.now(), LocalDate.now().plusYears(1)); // or nulls or default values
-//        }
+        @Override
+        public String toString() {
+            String priorityLabel;
+            switch (priority) {
+                case 1:
+                    priorityLabel = "CRITICAL";
+                    break;
+                case 2:
+                    priorityLabel = "URGENT";
+                    break;
+                case 3:
+                    priorityLabel = "ROUTINE";
+                    break;
+                default:
+                    priorityLabel = "UNKNOWN";
+                    break;
+            }
+            return name + " (" + priorityLabel + ")";
+        }
+
     }
 
     //Date Setter 
@@ -470,6 +608,53 @@ public class Main {
         int d = scnr.nextInt();
         scnr.nextLine();
         return LocalDate.of(y, m, d);
+    }
+
+    //Save2File
+    static void savePatientsToFile(String filename) {
+        try (PrintWriter out = new PrintWriter(new FileWriter(filename))) {
+            for (Patient p : patientList) {
+                // format: ID,name,age,diagnosis,priority,dateOfBirth
+                String line = p.ID + "," + p.name + "," + p.age + ","
+                        + p.diagnosis + "," + p.priority + ","
+                        + p.dateOfBirth.toString(); // LocalDate -> "YYYY-MM-DD"
+                out.println(line);
+            }
+        } catch (IOException e) {
+            System.out.println("Error saving patients: " + e.getMessage());
+        }
+
+    }
+
+    //loadFromFile
+    static void loadPatientsFromFile(String filename) {
+        File file = new File(filename);
+        if (!file.exists()) {
+            // No saved patients yet; nothing to load
+            return;
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length != 6) {
+                    continue; // or handle error
+                }
+                int id = Integer.parseInt(parts[0]);
+                String name = parts[1];
+                int age = Integer.parseInt(parts[2]);
+                String diagnosis = parts[3];
+                int priority = Integer.parseInt(parts[4]);
+                LocalDate dob = LocalDate.parse(parts[5]); // "YYYY-MM-DD"
+
+                Patient p = new Patient(name, id, age, diagnosis, priority, dob);
+                patientList.add(p);
+                pHash.put(p.ID, p);
+            }
+        } catch (IOException e) {
+            System.out.println("Error loading patients: " + e.getMessage());
+        }
     }
 
     static class Appointment {
@@ -484,6 +669,82 @@ public class Main {
             Check if doctor is free at that time (using boolean isFree)
             If both sucessful, declare an Appointment and offer() it into appointmentQueue
          */
+    }
+
+    static class Priority {
+
+        Queue<Patient> criticalQueue = new LinkedList<>();
+        Queue<Patient> urgentQueue = new LinkedList<>();
+        Queue<Patient> routineQueue = new LinkedList<>();
+        Queue<Patient> unknownQueue = new LinkedList<>();
+
+        // Add patient to appropriate queue
+        public void addPatient(Patient patient) {
+            if (patient.priority == 1) {
+                criticalQueue.add(patient);
+            } else if (patient.priority == 2) {
+                urgentQueue.add(patient);
+            } else if (patient.priority == 3) {
+                routineQueue.add(patient);
+            } else {
+                unknownQueue.add(patient);
+            }
+
+        }
+
+        //Get next patient to be treated
+        public Patient getNextPatient() {
+            if (!criticalQueue.isEmpty()) {
+                return criticalQueue.poll();
+            } else if (!urgentQueue.isEmpty()) {
+                return urgentQueue.poll();
+            } else if (!routineQueue.isEmpty()) {
+                return routineQueue.poll();
+            } else if (!unknownQueue.isEmpty()) {
+                return unknownQueue.poll();
+            } else {
+            }
+            return null;
+        }
+
+//Display all queues
+        public void displayQueues() {
+            System.out.println("Critical: " + criticalQueue);
+            System.out.println("Urgent: " + urgentQueue);
+            System.out.println("Routine: " + routineQueue);
+            System.out.println("Unkown: " + unknownQueue);
+        }
+
+    }
+
+    static class Employee { //generic employee type for admin
+
+        private String name;
+        private String role;
+        private double salary;
+
+        public Employee(String name, String role, double salary) {
+            this.name = name;
+            this.role = role;
+            this.salary = salary;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getRole() {
+            return role;
+        }
+
+        public double getSalary() {
+            return salary;
+        }
+
+        @Override
+        public String toString() {
+            return name + " - " + role + " ($" + salary + ")";
+        }
     }
 
 }

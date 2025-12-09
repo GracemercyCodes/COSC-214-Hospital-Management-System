@@ -197,6 +197,15 @@ public class Main {
                                     found = true;
                                 }
                             }
+                            //Nurse Menu
+                            /*
+                            Nurse Abilities: 
+                            View Schedule, Edit schedule, report hours, mark as busy
+                            Treat,administer medication, change patient priority, edit Patient information file
+                            Retrieve information from the Doc list to pass on to the patient (Eg: they need someone with a different speciality)
+                            Search the Doc, Tech and Nurse List.
+
+                            */
 
                             // check tech list
                             for (Tech t : techlist) {
@@ -206,6 +215,14 @@ public class Main {
                                     found = true;
                                 }
                             }
+                            /*
+                            Tech Menu
+                            View Schedule, Edit schedule, report hours
+                            Diagnose, change patient priority, edit Patient information file
+                            Retrieve information from the Doc list to pass on to the patient (Eg: they need someone with a different speciality)
+                            Search the Doc, Tech and Nurse List.
+
+                            */
 
                             // check doc list
                             for (Doc d : doclist) {
@@ -215,6 +232,15 @@ public class Main {
                                     found = true;
                                 }
                             }
+                            /*
+                            Doc Menu
+                            Schedule: View Schedule, Edit schedule, report hours, mark as busy
+                            See Patient: Diagnose, change patient priority, edit Patient information file, prescribe medicine
+                            Refer: Retrieve information from the Doc list to pass on to the patient (Eg: they need someone with a different speciality)
+                            Search: Search the Doc, Tech and Nurse List.
+
+                            */
+                            
 
                             if (!found) {
                                 System.out.println("No user found with ID " + checkID);
@@ -331,8 +357,8 @@ public class Main {
                     are done*/
 
                     while (!patientBack) {
-                        System.out.println("\nDo you already exist in the system?");
-                        System.out.println("1: Yes \n2: No\n0: Exit");
+                        System.out.println("\nAre your Returning or New?"); //1 exists, 2 doesnt(new)
+                        System.out.println("1: I'm Returning \n2: I'm new\n0: Exit");
                         int existsChoice2 = scnr.nextInt(); //exists choice is already in the Staff case
                         scnr.nextLine();
                         switch (existsChoice2) {
@@ -353,8 +379,9 @@ public class Main {
                             2: Schedule an appointment
                             0: Back
                                  */
-
-                                System.out.println("1: View my info again \n2: Schedule Appointment\n0: Back");
+                                boolean pMenuBack = false;
+                                while(!pMenuBack){
+                                         System.out.println("1: View my info again \n2: Schedule Appointment\n0: Back");
                                 int pMenu = scnr.nextInt();
                                 switch (pMenu) {
                                     case 1:
@@ -365,18 +392,34 @@ public class Main {
                                         //Schedule appointment
                                         //prints doc speciality options
                                         for (int i = 0; i < doclist.size(); i++) {
-                                            System.out.print(i + ": ");
                                             Doc d = doclist.get(i);
-                                            System.out.print(i + ":" + d.toString());
+                                            System.out.print((i + 1) + ":" + d.toString());
                                         }
-                                        System.out.println("Which Doctor would you like?");
+                                        System.out.println("Enter the index of the Doctor you'd like to see");
                                         int docIndex = scnr.nextInt();
+                                        while (docIndex < 0 || docIndex > doclist.size()) {
+                                            System.out.println("Invalid input. Please try again");
+                                            docIndex = scnr.nextInt();
+                                        }
+                                        Doc chosenDoc = doclist.get(docIndex-1);
+                                        LocalDate apptDate = getDateInput(scnr, "appointment date");
+                                        Appointment appt = new Appointment(p, chosenDoc, apptDate);
+                                        appointmentQueue.offer(appt);
+                                        System.out.println("Appointment scheduled with Dr. " + chosenDoc.name
+                                                + " on " + apptDate.toString());
 
                                         break;
                                     case 0:
                                         //goes back
+                                        pMenuBack = true;
+                                        
                                         break;
+                                        
                                 }
+                                }
+                                
+
+                       
 
                                 break; //ends case 1 (Existing patient)
                             case 2:
@@ -456,6 +499,12 @@ public class Main {
                                 break;
                             case 2:
                                 //employees
+                                /*
+                                Options: 
+                                1] View all employees
+                                2] Add/Remove employees
+                                3] Decide pay of employees
+                                */
 
                                 break;
                             case 0:
@@ -662,6 +711,7 @@ public class Main {
         Patient patient;
         Doc doctor;
         LocalDate date;
+
         // time slot or reason
         /*
         When a patient wants an appointment:
@@ -669,6 +719,12 @@ public class Main {
             Check if doctor is free at that time (using boolean isFree)
             If both sucessful, declare an Appointment and offer() it into appointmentQueue
          */
+        Appointment(Patient patient, Doc doctor, LocalDate date) {
+            this.patient = patient;
+            this.doctor = doctor;
+            this.date = date;
+
+        }
     }
 
     static class Priority {

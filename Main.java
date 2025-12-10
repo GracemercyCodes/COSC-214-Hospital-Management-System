@@ -45,6 +45,9 @@ public class Main {
     private static LinkedList<Tech> techlist = new LinkedList<>();
     private static LinkedList<Doc> doclist = new LinkedList<>();
 
+    //Employee Array list
+    private static ArrayList<Employee> employees = new ArrayList<>();
+
     //Staff Hashmaps for fast search
     private static HashMap<Integer, Nurse> nHash = new HashMap<>();// -> <staff.ID, staff>
     private static HashMap<Integer, Tech> tHash = new HashMap<>();
@@ -205,7 +208,7 @@ public class Main {
                             Retrieve information from the Doc list to pass on to the patient (Eg: they need someone with a different speciality)
                             Search the Doc, Tech and Nurse List.
 
-                            */
+                             */
 
                             // check tech list
                             for (Tech t : techlist) {
@@ -222,7 +225,7 @@ public class Main {
                             Retrieve information from the Doc list to pass on to the patient (Eg: they need someone with a different speciality)
                             Search the Doc, Tech and Nurse List.
 
-                            */
+                             */
 
                             // check doc list
                             for (Doc d : doclist) {
@@ -230,6 +233,7 @@ public class Main {
                                     System.out.println("Found Doctor:");
                                     System.out.println("Dr. " + d.name + "\nSpeciality: " + d.spec);
                                     found = true;
+                                    doctorMenu(d, scnr);
                                 }
                             }
                             /*
@@ -239,8 +243,7 @@ public class Main {
                             Refer: Retrieve information from the Doc list to pass on to the patient (Eg: they need someone with a different speciality)
                             Search: Search the Doc, Tech and Nurse List.
 
-                            */
-                            
+                             */
 
                             if (!found) {
                                 System.out.println("No user found with ID " + checkID);
@@ -347,6 +350,7 @@ public class Main {
 
                         default:
                             System.out.println("Invalid choice");
+                            break;
                     }
 
                     break;
@@ -357,7 +361,7 @@ public class Main {
                     are done*/
 
                     while (!patientBack) {
-                        System.out.println("\nAre your Returning or New?"); //1 exists, 2 doesnt(new)
+                        System.out.println("\nAre you a Returning patient or New?"); //1 exists, 2 doesnt(new)
                         System.out.println("1: I'm Returning \n2: I'm new\n0: Exit");
                         int existsChoice2 = scnr.nextInt(); //exists choice is already in the Staff case
                         scnr.nextLine();
@@ -374,52 +378,8 @@ public class Main {
                                     // String name, int ID, int age, String diagnosis, float priority, LocalDate dateOfBirth
 
                                 }
-                                /*
-                            1: View my info again
-                            2: Schedule an appointment
-                            0: Back
-                                 */
-                                boolean pMenuBack = false;
-                                while(!pMenuBack){
-                                         System.out.println("1: View my info again \n2: Schedule Appointment\n0: Back");
-                                int pMenu = scnr.nextInt();
-                                switch (pMenu) {
-                                    case 1:
-                                        //View info
-                                        System.out.println(p.name + ", " + p.ID + ", " + p.age + " Diagnosis: " + p.diagnosis + ", " + p.priority + " " + p.dateOfBirth.toString());
-                                        break;
-                                    case 2:
-                                        //Schedule appointment
-                                        //prints doc speciality options
-                                        for (int i = 0; i < doclist.size(); i++) {
-                                            Doc d = doclist.get(i);
-                                            System.out.print((i + 1) + ":" + d.toString());
-                                        }
-                                        System.out.println("Enter the index of the Doctor you'd like to see");
-                                        int docIndex = scnr.nextInt();
-                                        while (docIndex < 0 || docIndex > doclist.size()) {
-                                            System.out.println("Invalid input. Please try again");
-                                            docIndex = scnr.nextInt();
-                                        }
-                                        Doc chosenDoc = doclist.get(docIndex-1);
-                                        LocalDate apptDate = getDateInput(scnr, "appointment date");
-                                        Appointment appt = new Appointment(p, chosenDoc, apptDate);
-                                        appointmentQueue.offer(appt);
-                                        System.out.println("Appointment scheduled with Dr. " + chosenDoc.name
-                                                + " on " + apptDate.toString());
-
-                                        break;
-                                    case 0:
-                                        //goes back
-                                        pMenuBack = true;
-                                        
-                                        break;
-                                        
-                                }
-                                }
-                                
-
-                       
+                                //Menu
+                                patientMenu(p, scnr); //Moved to become a helper method
 
                                 break; //ends case 1 (Existing patient)
                             case 2:
@@ -472,7 +432,7 @@ public class Main {
                             case 1:
                                 //Triage
 
-                                System.out.println("====Hospital Traige Center====");
+                                System.out.println("====Hospital Triage Center====");
                                 System.out.println("How many patients are being added? ");
                                 int numPatients = scnr.nextInt();
                                 for (int i = 0; i < numPatients; i++) {
@@ -504,7 +464,49 @@ public class Main {
                                 1] View all employees
                                 2] Add/Remove employees
                                 3] Decide pay of employees
-                                */
+                                 */
+                                boolean employAdmin = false;//this is for a mini menu
+                                System.out.println("====Employee Management====");
+                                while (!employAdmin) {
+                                    System.out.println("1: View all employees\n2: Add/Remove employees");
+                                    int employOpp = scnr.nextInt();
+                                    scnr.nextLine();
+                                    switch (employOpp) {
+                                        case 1:
+                                            //Viewing all employees
+                                            break;
+                                        case 2:
+                                            //adding or removing
+                                            System.out.println("\n=== Hospital Employees ===");
+                                            System.out.print("How many employees do you want to add? ");
+                                            int numEmployees = scnr.nextInt();
+                                            scnr.nextLine();
+
+                                            for (int i = 0; i < numEmployees; i++) {
+                                                System.out.print("Enter employee name: ");
+                                                String name = scnr.nextLine();
+
+                                                System.out.print("Enter role: ");
+                                                String role = scnr.nextLine();
+
+                                                System.out.print("Enter salary: ");
+                                                double salary = scnr.nextDouble();
+                                                scnr.nextLine();
+
+                                                employees.add(new Employee(name, role, salary));
+                                            }
+
+                                            break;
+                                        case 0:
+                                            //quits mini menu
+                                            employAdmin = true;
+                                            break;
+                                        default:
+                                            System.out.println("Invalid input");
+                                            break;
+
+                                    }
+                                }
 
                                 break;
                             case 0:
@@ -606,6 +608,164 @@ public class Main {
         }
 
     }
+
+    //Menus
+    static void patientMenu(Patient p, Scanner scnr) {
+        boolean pMenuBack = false;
+        /*
+            1: View my info again
+            2: Schedule an appointment
+            0: Back
+         */
+
+        while (!pMenuBack) {
+            System.out.println("1: View my info again \n2: Schedule Appointment\n0: Back");
+            int pMenu = scnr.nextInt();
+            switch (pMenu) {
+                case 1:
+                    //View info
+                    System.out.println(p.name + ", " + p.ID + ", " + p.age + " Diagnosis: " + p.diagnosis + ", " + p.priority + " " + p.dateOfBirth.toString());
+                    break;
+                case 2:
+                    //Schedule appointment
+                    //prints doc speciality options
+                    for (int i = 0; i < doclist.size(); i++) {
+                        Doc d = doclist.get(i);
+                        System.out.print((i + 1) + ":" + d.toString());
+                    }
+                    System.out.println("Enter the index of the Doctor you'd like to see");
+                    int docIndex = scnr.nextInt();
+                    while (docIndex < 1 || docIndex > doclist.size()) {
+                        System.out.println("Invalid input. Please try again");
+                        docIndex = scnr.nextInt();
+                    }
+                    Doc chosenDoc = doclist.get(docIndex - 1);
+                    LocalDate apptDate = getDateInput(scnr, "appointment date");
+                    Appointment appt = new Appointment(p, chosenDoc, apptDate);
+                    appointmentQueue.offer(appt);
+                    System.out.println("Appointment scheduled with Dr. " + chosenDoc.name
+                            + " on " + apptDate.toString());
+
+                    break;
+                case 0:
+                    //goes back
+                    pMenuBack = true;
+
+                    break;
+                default:
+                    System.out.println("Invalid input");
+                    break;
+
+            }
+        }
+    }//end patient menu
+
+    static void doctorMenu(Doc currentDoc, Scanner scnr) {
+        boolean dMenuback = false;
+        while (!dMenuback) {
+            /*
+            ------Doc Menu------
+            1]Schedule: View Schedule, Edit schedule, report hours, mark as busy
+            2]See Patient: Diagnose, change patient priority, edit Patient information file, prescribe medicine
+            3]Refer: Retrieve information from the Doc list to pass on to the patient (Eg: they need someone with a different speciality)
+            4]Search: Search the Doc, Tech and Nurse List.                       
+             */
+            System.out.println("1: View Schedule \n2: See patient\n3:Search other Employees\n0: Back");
+            int dMenu = scnr.nextInt();
+            scnr.nextLine();
+            switch (dMenu) {
+
+                case 1:
+                    System.out.print("Up next: ... ");
+                    for (Appointment a : appointmentQueue) {
+                        if (a.doctor.ID == currentDoc.ID) {
+                            System.out.println(a.patient.name + " " + a.date);
+                        }
+                    }
+
+                    break;
+                case 2:
+                    //See patient diagnose/priority
+                    System.out.println("Enter patient ID");
+                    int pID = scnr.nextInt();
+                    scnr.nextLine();
+                    Patient p = pHash.get(pID);
+                    if (p == null) {
+                        System.out.println("Patient not found");
+                    } else {
+                        System.out.println("Enter new Diagnosis");
+                        p.diagnosis = scnr.nextLine();
+                        System.out.println("Enter new priority");
+                        p.priority = scnr.nextInt();
+                        triage.addPatient(p);
+                        savePatientsToFile("patients.txt");
+                    }
+
+                    break;
+                case 3:
+                    //Search
+                    /*
+                    1: Search Doctor
+                    2: Search Nurse
+                    3: Search Tech
+                    0: Back                    
+                     */
+                    System.out.println("Search which type?");
+                    System.out.println("1: Doctor\n2: Nurse\n3: Tech\n0: Back");
+                    int type = scnr.nextInt();
+                    scnr.nextLine();
+
+                    if (type == 0) {
+                        break;
+                    }
+
+                    System.out.println("Enter ID:");
+                    int id = scnr.nextInt();
+                    scnr.nextLine();
+
+                switch (type) {
+                    case 1:
+                        Doc d = docHash.get(id);
+                        if (d != null) {
+                            System.out.println("Doctor: " + d);
+                        } else {
+                            System.out.println("Doctor not found");
+                        }
+                        break;
+                    case 2:
+                        Nurse n = nHash.get(id);
+                        if (n != null) {
+                            System.out.println("Nurse: " + n.name + " (" + n.spec + ")");
+                        } else {
+                            System.out.println("Nurse not found");
+                        }
+                        break;
+                    case 3:
+                        Tech t = tHash.get(id);
+                        if (t != null) {
+                            System.out.println("Tech: " + t.name + " (" + t.spec + ")");
+                        } else {
+                            System.out.println("Tech not found");
+                        }
+                        break;
+                    default:
+                        System.out.println("Invalid type");
+                        break;
+                }
+                    break;
+
+                case 0:
+                    //back/quit
+                    dMenuback = true;
+                    break;
+                default:
+                    System.out.println("Invalid input");
+                    break;
+
+            }
+
+        }
+    }//end doc Menu
 
     static class Patient {
 
